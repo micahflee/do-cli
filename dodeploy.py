@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
+import os
+import sys
 import argparse
 import dopy
 
 def main():
+    # Make sure we have a DigitalOcean API key
+    if 'DO_API_KEY' not in os.environ:
+        print("You must have a DigitalOcean API key stored in the DO_API_KEY environment variable")
+        sys.exit()
+
     # Parse arguments
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
