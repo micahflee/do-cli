@@ -3,6 +3,9 @@ import os
 import sys
 import argparse
 from dopy.manager import DoManager
+from colored import fg, bg, attr
+from tabulate import tabulate
+
 
 def main():
     # Make sure we have a DigitalOcean API key
@@ -20,11 +23,21 @@ def main():
     args = parser.parse_args()
 
     if args.list:
+        table = []
+        headers = ['Droplet', 'IP address', 'id', 'Memory', 'Disk', 'Region']
+
         droplets = do.all_active_droplets()
         for droplet in droplets:
-             print("{} {}".format(droplet['name'], droplet['ip_address']))
-             print("id={} | {}MB memory, {}GB disk, {}".format(droplet['id'], droplet['memory'], droplet['disk'], droplet['region']['slug']))
-             print("")
+            table.append([
+                "{}{}{}".format(attr('bold'), droplet['name'], attr('reset')),
+                droplet['ip_address'],
+                droplet['id'],
+                droplet['memory'],
+                droplet['disk'],
+                droplet['region']['slug']
+            ])
+        print(tabulate(table, headers=headers))
+        print("")
 
     elif args.create:
         pass
