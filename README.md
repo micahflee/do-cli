@@ -5,5 +5,5 @@ A CLI tool for listing, creating, and deleting DigitalOcean droplets in a projec
 ## Install dependencies
 
 ```
-pip3 install dopy
+pip3 install -r requirements.txt
 ```
