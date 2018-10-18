@@ -109,7 +109,18 @@ def delete(args):
     """
     Delete a droplet
     """
-    print("delete not implemented")
+    try:
+        droplet = do.show_droplet(args.id)
+
+        if args.force:
+            do.destroy_droplet(args.id)
+            print("The following droplet has been deleted.\n")
+        else:
+            print("To delete the following droplet, run again with --force.\n")
+
+        display_droplets([droplet])
+    except dopy.manager.DoError as err:
+        print(err)
 
 
 def main():
@@ -129,6 +140,8 @@ def main():
     create_parser.set_defaults(func=create)
 
     delete_parser = subparsers.add_parser('delete', help='Delete a droplet')
+    delete_parser.add_argument('id', help='Id of droplet')
+    delete_parser.add_argument('--force', action='store_true', help='Required to actually delete the droplet')
     delete_parser.set_defaults(func=delete)
 
     args = parser.parse_args()
