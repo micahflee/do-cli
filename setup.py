@@ -13,7 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     license="GPLv3+",
     python_requires=">=3.4",
-    url="https://github.com/micahflee/do",
+    url="https://github.com/micahflee/do-cli",
     scripts=['do-cli'],
     classifiers=(
         "Development Status :: 3 - Alpha",
