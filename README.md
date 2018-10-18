@@ -5,7 +5,7 @@ droplets.
 
 ## Getting started
 
-Install `do` with pip3, like:
+Install `do-cli` with pip3, like:
 
 ```sh
 pip3 install do-cli
@@ -28,7 +28,7 @@ has it can create/delete DigitalOcean VPSes in your account.
 First, choose a sub-command, either `list`, `create`, or `delete`:
 
 ```
-$ do -h
+$ do-cli -h
 usage: do [-h] {list,create,delete} ...
 
 positional arguments:
@@ -44,13 +44,13 @@ optional arguments:
 Listing doesn't require any extra arguments.
 
 Creating requires a name, and you can optionally choose size, image, and
-region for the droplet that you'll be creating. Note that `do` will
+region for the droplet that you'll be creating. Note that `do-cli` will
 automatically upload the SSH public key it finds in `~/.ssh/id_rsa.pub`
 to your account if it's not already there, and add it to the new droplet
 that gets created.
 
 ```
-$ do create -h
+$ do-cli create -h
 usage: do create [-h] [--size SIZE] [--image IMAGE] [--region REGION] name
 
 positional arguments:
@@ -68,7 +68,7 @@ deleting a droplet, you *must* include the optional flag `--force` or
 else it won't delete it.
 
 ```
-$ do delete -h
+$ do-cli delete -h
 usage: do delete [-h] [--force] id
 
 positional arguments:
@@ -84,19 +84,19 @@ optional arguments:
 My DigitalOcean account doesn't have any droplets yet, so I'll create one:
 
 ```
-$ do create test1
+$ do-cli create test1
 Added your SSH key, 'user@dev' to DigitalOcean
 Droplet    IP address           id    Memory    Disk  Region
 ---------  ------------  ---------  --------  ------  --------
 test1                    115661631       512      20  sfo2
 ```
 
-Notice that `do` added my SSH key to DigitalOcean. The IP address of the
+Notice that `do-cli` added my SSH key to DigitalOcean. The IP address of the
 new droplet isn't shown yet because it was just created, but I can run
 list to see it:
 
 ```
-$ do list
+$ do-cli list
 Droplet    IP address              id    Memory    Disk  Region
 ---------  ---------------  ---------  --------  ------  --------
 test1      138.68.12.60     115661631       512      20  sfo2
@@ -106,7 +106,7 @@ Great, now I'll add a second droplet, but this time in New York instead
 of San Francisco, and with 1GB of RAM instead of 512MB.
 
 ```
-$ do create test2 --size 1gb --region nyc1
+$ do-cli create test2 --size 1gb --region nyc1
 Droplet    IP address           id    Memory    Disk  Region
 ---------  ------------  ---------  --------  ------  --------
 test2                    115661894      1024      30  nyc1
@@ -115,7 +115,7 @@ test2                    115661894      1024      30  nyc1
 Now I'm going to look at my list of droplets:
 
 ```
-$ ./do list
+$ do-cli list
 Droplet    IP address              id    Memory    Disk  Region
 ---------  ---------------  ---------  --------  ------  --------
 test1      138.68.12.60     115661631       512      20  sfo2
@@ -125,7 +125,7 @@ test2      159.65.229.223   115661894      1024      30  nyc1
 Now I'm going to delete my test1 droplet:
 
 ```
-$ do delete test1
+$ do-cli delete test1
 The resource you were accessing could not be found.
 ```
 
@@ -135,7 +135,7 @@ You can have multiple droplets with the same name.) Let's try again, but
 this time with the id "115661631".
 
 ```
-$ do delete 115661631
+$ do-cli delete 115661631
 To delete the following droplet, run again with --force.
 
 Droplet    IP address           id    Memory    Disk  Region
@@ -143,10 +143,11 @@ Droplet    IP address           id    Memory    Disk  Region
 test1      138.68.12.60  115661631       512      20  sfo2
 ```
 
-Almost. To avoid accidentally permanently deleting the wrong droplet, you have to pass `--force` into `do`.
+Almost. To avoid accidentally permanently deleting the wrong droplet, you
+have to pass `--force` into `do-cli`.
 
 ```
-$ do delete 115661631 --force
+$ do-cli delete 115661631 --force
 The following droplet has been deleted.
 
 Droplet    IP address           id    Memory    Disk  Region
@@ -157,7 +158,7 @@ test1      138.68.12.60  115661631       512      20  sfo2
 It's been deleted. Let's list droplets now.
 
 ```
-$ ./do list
+$ do-cli list
 Droplet    IP address              id    Memory    Disk  Region
 ---------  ---------------  ---------  --------  ------  --------
 test2      159.65.229.223   115661894      1024      30  nyc1

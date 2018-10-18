@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="do-cli",
-    version="0.1.0",
+    version="0.1.1",
     author="Micah Lee",
     author_email="micah@micahflee.com",
     description="A simple command line tool for listing, creating, and deleting DigitalOcean droplets.",
@@ -14,7 +14,7 @@ setuptools.setup(
     license="GPLv3+",
     python_requires=">=3.4",
     url="https://github.com/micahflee/do",
-    scripts=['do'],
+    scripts=['do-cli'],
     classifiers=(
         "Development Status :: 3 - Alpha",
         "Environment :: Console",
