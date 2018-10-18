@@ -25,4 +25,5 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "Topic :: Internet"
     ),
+    install_requires=['colored', 'tabulate', 'dopy']
 )
