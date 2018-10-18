@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="do",
+    name="do-cli",
     version="0.1.0",
     author="Micah Lee",
     author_email="micah@micahflee.com",

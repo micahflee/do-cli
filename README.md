@@ -8,7 +8,7 @@ droplets.
 Install `do` with pip3, like:
 
 ```sh
-pip3 install do
+pip3 install do-cli
 ```
 
 You need to store a DigitalOcean API key in the `DO_API_KEY` environment
