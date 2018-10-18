@@ -58,21 +58,25 @@ def add_ssh_key():
     pubkey_fingerprint_plain = hashlib.md5(pubkey).hexdigest()
     pubkey_fingerprint = ':'.join(a+b for a,b in zip(pubkey_fingerprint_plain[::2], pubkey_fingerprint_plain[1::2]))
 
-    # Make sure the ssh key exists in the DigitalOcean account
-    ssh_key_id = None
-    ssh_keys = do.all_ssh_keys()
-    for ssh_key in ssh_keys:
-        if ssh_key['fingerprint'] == pubkey_fingerprint:
-            ssh_key_id = ssh_key['id']
-            break
+    try:
+        # Make sure the ssh key exists in the DigitalOcean account
+        ssh_key_id = None
+        ssh_keys = do.all_ssh_keys()
+        for ssh_key in ssh_keys:
+            if ssh_key['fingerprint'] == pubkey_fingerprint:
+                ssh_key_id = ssh_key['id']
+                break
 
-    # If the ssh key isn't in DigitalOcean, add it
-    if not ssh_key_id:
-        res = do.new_ssh_key(pubkey_name, pubkey_text)
-        ssh_key_id = res['id']
-        print("Added your SSH key, '{}' to DigitalOcean".format(pubkey_name))
+        # If the ssh key isn't in DigitalOcean, add it
+        if not ssh_key_id:
+            res = do.new_ssh_key(pubkey_name, pubkey_text)
+            ssh_key_id = res['id']
+            print("Added your SSH key, '{}' to DigitalOcean".format(pubkey_name))
 
-    return ssh_key_id
+        return ssh_key_id
+    except dopy.manager.DoError as err:
+        print(err)
+        return None
 
 
 def list(args):
@@ -91,6 +95,9 @@ def create(args):
     Create a new droplet
     """
     ssh_key_id = add_ssh_key()
+    if not ssh_key_id:
+        return
+
     try:
         droplet = do.new_droplet(args.name, args.size, args.image, args.region, [ssh_key_id])
         display_droplets([droplet])
