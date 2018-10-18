@@ -4,16 +4,38 @@ import sys
 import argparse
 import base64
 import hashlib
-from dopy.manager import DoManager
 from colored import fg, bg, attr
 from tabulate import tabulate
 
+import dopy.manager
+# Monkeypath dopy to fix this exception related to python3, see https://stackoverflow.com/a/34803630
+dopy.manager.basestring = str
 
 # Make sure we have a DigitalOcean API key
 if 'DO_API_KEY' not in os.environ:
     print("You must have a DigitalOcean API key stored in the DO_API_KEY environment variable")
     sys.exit()
-do = DoManager(None, os.environ['DO_API_KEY'], api_version=2)
+do = dopy.manager.DoManager(None, os.environ['DO_API_KEY'], api_version=2)
+
+
+def display_droplets(droplets):
+    """
+    Print out details about droplets in a table.
+    """
+    table = []
+    headers = ['Droplet', 'IP address', 'id', 'Memory', 'Disk', 'Region']
+
+    for droplet in droplets:
+        table.append([
+            "{}{}{}".format(attr('bold'), droplet['name'], attr('reset')),
+            droplet['ip_address'],
+            droplet['id'],
+            droplet['memory'],
+            droplet['disk'],
+            droplet['region']['slug']
+        ])
+    print(tabulate(table, headers=headers))
+    print("")
 
 
 def add_ssh_key():
@@ -57,21 +79,11 @@ def list(args):
     """
     List droplets
     """
-    table = []
-    headers = ['Droplet', 'IP address', 'id', 'Memory', 'Disk', 'Region']
-
-    droplets = do.all_active_droplets()
-    for droplet in droplets:
-        table.append([
-            "{}{}{}".format(attr('bold'), droplet['name'], attr('reset')),
-            droplet['ip_address'],
-            droplet['id'],
-            droplet['memory'],
-            droplet['disk'],
-            droplet['region']['slug']
-        ])
-    print(tabulate(table, headers=headers))
-    print("")
+    try:
+        droplets = do.all_active_droplets()
+        display_droplets(droplets)
+    except dopy.manager.DoError as err:
+        print(err)
 
 
 def create(args):
@@ -79,6 +91,11 @@ def create(args):
     Create a new droplet
     """
     ssh_key_id = add_ssh_key()
+    try:
+        droplet = do.new_droplet(args.name, args.size, args.image, args.region, [ssh_key_id])
+        display_droplets([droplet])
+    except dopy.manager.DoError as err:
+        print(err)
 
 
 def delete(args):
@@ -93,12 +110,20 @@ def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='command')
     subparsers.required = True
+
     list_parser = subparsers.add_parser('list', help='List droplets')
     list_parser.set_defaults(func=list)
+
     create_parser = subparsers.add_parser('create', help='Create a new droplet')
+    create_parser.add_argument('name', help='Name of droplet')
+    create_parser.add_argument('--size', default='512mb', help='Size (in RAM) of the droplet (default: 512mb)')
+    create_parser.add_argument('--image', default='ubuntu-18-10-x64', help='Base image of the droplet (default: ubuntu-18-10-x64)')
+    create_parser.add_argument('--region', default='sfo2', help='Region of the droplet (default: sfo2)')
     create_parser.set_defaults(func=create)
+
     delete_parser = subparsers.add_parser('delete', help='Delete a droplet')
     delete_parser.set_defaults(func=delete)
+
     args = parser.parse_args()
     args.func(args)
 
